@@ -1,0 +1,80 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.10;
+
+contract Estudiante {
+
+    
+    string private _Nombre;
+    string private _Apellido;
+    string private _Curso;
+    address private _Docente;
+    mapping (string => uint8) private Notas_Materia;
+    string[] private _Nom_Materias;
+
+    
+    constructor(string memory Nombre_, string memory Apellido_, string memory Curso_) {
+        _Nombre = Nombre_;
+        _Apellido = Apellido_;
+        _Curso = Curso_;
+        _Docente = msg.sender;
+    }
+
+    
+    function Apellido() public view returns (string memory) {
+        return _Apellido;
+    }
+
+    function AppendString(string memory a, string memory b, string memory c) public pure returns (string memory) {
+        return string(abi.encodePacked(a,b,c));
+    }
+
+
+    
+    function Nombre_Completo() public view returns (string memory) {
+        return AppendString(_Nombre, " ", _Apellido);
+    }
+
+    
+    function Curso() public view returns (string memory) {
+        return _Curso;
+    }
+
+
+    function Set_Nota_Materia(uint8 _Nota, string memory _Materia) public {
+        require(_Docente == msg.sender, "Cambiar la nota no es una opcion");
+        require(_Nota <= 100 && _Nota >= 1, "No podes tener esta nota");
+        Notas_Materia[_Materia] = _Nota;
+        _Nom_Materias.push(_Materia);
+    }
+
+    
+    function Nota_Materia(string memory _Materia) public view returns (uint) {
+        uint _Nota = Notas_Materia[_Materia];   
+        return _Nota;
+    }
+    
+    
+    function Aprobo(string memory _Materia) public view returns (bool) {
+        if (Notas_Materia[_Materia] >= 60){
+            return true;
+        } else {
+            return false;
+        }
+       
+    }
+
+    function Promedio() public view returns (uint) {
+
+        uint _CantItems = _Nom_Materias.length;
+        uint _NotaPromedio;
+        uint _NotaFinal;
+
+        for (uint c = 0; c < _CantItems; c++){
+            _NotaPromedio += Notas_Materia[_Nom_Materias[c]];
+        }
+
+        _NotaFinal = _NotaPromedio / _CantItems;
+        return _NotaFinal;
+    
+    }
+}
